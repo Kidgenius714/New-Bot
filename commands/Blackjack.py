@@ -165,7 +165,7 @@ async def win(id, bot):
     bot_deck = data[id]["bot_cards"]
     embed.add_field(name="Bot", value=await embed_cards(bot_deck))
 
-    embed.set_footer(text=f"Bust I win! Better luck next time. Amount Lost: {amountToString(data[id]['amount'])} {data[id]['type'].format_string()}", icon_url=data[id]["icon_url"])
+    embed.set_footer(text=f"I guess you win this time. Amount Won: {amountToString(data[id]['amount'])} {data[id]['type'].format_string()}", icon_url=data[id]["icon_url"])
 
     if data[id]["msg_id"] is None:
         data[id]["msg_id"] = await data[id]["channel"].send(embed=embed)
@@ -268,7 +268,7 @@ class BlackJack(commands.Cog):
             "msg_id": None,
             "author_cards": [],
             "bot_cards": [],
-            "deck": cards_names * 4,
+            "deck": cards_names * 16,
             "author_stand": False,
             "type": coin_type,
             "amount": amount,
