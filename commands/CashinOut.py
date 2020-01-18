@@ -35,6 +35,7 @@ class Cash(commands.Cog):
     @commands.command(name="cashin")
     async def cashin(self, ctx, type: CoinType, amount: Amount):
         id = len(ids)
+        embed = Embed()
         embed.add_field(name="Request Host", value=f"{ctx.author.mention}, You are requesting to cashin {amountToString(amount)} {type.format_string()}. A cashier will be assigned to you, ID: {id}", inline=False)
         await ctx.guild.get_channel(request_id).send(embed=embed)
 
@@ -49,6 +50,7 @@ class Cash(commands.Cog):
     @commands.command(name="cashout")
     async def cashout(self, ctx, types: CoinType, amounts: Amount):
         id = len(ids)
+        embed = Embed()
         embed.add_field(name="Request Host", value=f"{ctx.author.mention}, You are requesting to cashout {amountToString(amount)} {type.format_string()}. A cashier will be assigned to you, ID: {id}", inline=False)
         await ctx.guild.get_channel(request_id).send(embed=embed)
 
@@ -76,11 +78,11 @@ class Cash(commands.Cog):
 
     @cashin.error
     async def cashin_info_error(self, ctx, error):
-        await self.info_error(ctx, error, "!cashin type amount")
+        await self.info_error(ctx, error, "!cashin [rs3 | 07] amount")
 
     @cashout.error
     async def cashout_info_error(self, ctx, error):
-        await self.info_error(ctx, error, "!cashout type amount")
+        await self.info_error(ctx, error, "!cashout [rs3 | 07] amount")
 
     @accept.error
     async def accept_info_error(self, ctx, error):

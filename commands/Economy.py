@@ -41,7 +41,7 @@ class Economy(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(name="wager")
-    async def wallet(self, ctx, user: typing.Optional[discord.Member]):
+    async def wager(self, ctx, user: typing.Optional[discord.Member]):
         if user is None:
             user = ctx.author
         # if user == self.bot.user:
@@ -75,6 +75,10 @@ class Economy(commands.Cog):
     @wallet.error
     async def wallet_info_error(self, ctx, error):
         await self.info_error(ctx, error, "![w | wallet] user")
+
+    @wager.error
+    async def wallet_info_error(self, ctx, error):
+        await self.info_error(ctx, error, "!wager user")
 
     @set_wallet.error
     async def wallet_info_error(self, ctx, error):
