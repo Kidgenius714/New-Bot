@@ -185,7 +185,7 @@ async def tie(id, bot):
     bot_deck = data[id]["bot_cards"]
     embed.add_field(name="Bot", value=await embed_cards(bot_deck))
 
-    embed.set_footer(text=f"Bust I win! Better luck next time. Amount Lost: {amountToString(data[id]['amount'])} {data[id]['type'].format_string()}", icon_url=data[id]["icon_url"])
+    embed.set_footer(text=f"It ended in a tie. No amount lost or given.", icon_url=data[id]["icon_url"])
 
     if data[id]["msg_id"] is None:
         data[id]["msg_id"] = await data[id]["channel"].send(embed=embed)
