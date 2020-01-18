@@ -66,7 +66,7 @@ client.add_cog(BlackJack(client))
 client.add_cog(Cash(client))
 
 @client.event
-def on_ready():
+async def on_ready():
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
