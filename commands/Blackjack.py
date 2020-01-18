@@ -258,6 +258,7 @@ class BlackJack(commands.Cog):
     @commands.command(name="bj")
     async def bj_command(self, ctx, coin_type: CoinType, amount: Amount):
         amountValid(self.bot, ctx.author.id, amount, coin_type)
+        self.bot.wagered(ctx.author.id, amount, coin_type)
         author_id = ctx.author.id
 
         if author_id in data:

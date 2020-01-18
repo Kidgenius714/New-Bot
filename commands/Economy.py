@@ -72,6 +72,16 @@ class Economy(commands.Cog):
         await ctx.send(embed=embed)
         self.bot.update_amount(user.id, amount, type)
 
+    @commands.command(name="transfer")
+    async def update(self, ctx, type: CoinType, user: discord.Member, amount: Amount):
+        amountValid(self.bot, ctx.author.id, amount, coin_type)
+        embed = Embed(colour=Colour.gold())
+        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+        embed.add_field(name="Transfer Request", value=f"Successfully transfered {amountToString(amount)} {type.format_string()} to {user.mention} wallet", inline=False)
+        await ctx.send(embed=embed)
+        self.bot.update_amount(user.id, amount, type)
+        self.bot.update_amount(ctx.author.id, amount, type)
+
     @wallet.error
     async def wallet_info_error(self, ctx, error):
         await self.info_error(ctx, error, "![w | wallet] user")

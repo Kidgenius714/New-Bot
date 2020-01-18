@@ -10,6 +10,7 @@ from commands.Amount_converter import Amount
 from commands.Coin_converter import CoinType
 from economy.Economy import amountToString
 from economy.Money_type import MoneyType
+from economy.Economy import amountValid
 
 
 def is_host():
@@ -34,6 +35,7 @@ class Cash(commands.Cog):
 
     @commands.command(name="cashin")
     async def cashin(self, ctx, types: CoinType, amounts: Amount):
+        amountValid(self.bot, ctx.author.id, amounts, types)
         id = len(ids)
         embed = Embed()
         embed.add_field(name="Request Host", value=f"{ctx.author.mention}, You are requesting to cashin {amountToString(amounts)} {types.format_string()}. A cashier will be assigned to you, ID: {id}", inline=False)
@@ -47,10 +49,10 @@ class Cash(commands.Cog):
             "type": types
         }
 
-        print(ids[id]["user"])
 
     @commands.command(name="cashout")
     async def cashout(self, ctx, types: CoinType, amounts: Amount):
+        amountValid(self.bot, ctx.author.id, amounts, types)
         id = len(ids)
         embed = Embed()
         embed.add_field(name="Request Host", value=f"{ctx.author.mention}, You are requesting to cashout {amountToString(amounts)} {types.format_string()}. A cashier will be assigned to you, ID: {id}", inline=False)

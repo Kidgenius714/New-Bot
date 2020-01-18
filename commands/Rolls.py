@@ -11,6 +11,7 @@ from economy.Economy import amountValid
 
 async def roll(bot, ctx, amount, type, chance, multiplier):
     amountValid(bot, ctx.author.id, amount, type)
+    bot.wagered(ctx.author.id, amount, coin_type)
 
     rolled = random.randint(0, 100)
     hasWon = rolled > chance
