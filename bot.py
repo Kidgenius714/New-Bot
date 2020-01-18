@@ -8,7 +8,7 @@ from commands.Economy import Economy
 from commands.Blackjack import BlackJack
 from commands.Rolls import Rolls
 from economy.Money_type import MoneyType
-from commands.Cashin-out import Cash
+from commands.CashinOut import Cash
 
 client = commands.Bot(command_prefix=config.prefix, case_insensitive=True);
 
