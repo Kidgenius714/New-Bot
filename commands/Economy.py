@@ -40,6 +40,20 @@ class Economy(commands.Cog):
                         value=amountToString(self.bot.get_amount(user.id, MoneyType.R07)), inline=False)
         await ctx.send(embed=embed)
 
+    @commands.command(name="wager")
+    async def wallet(self, ctx, user: typing.Optional[discord.Member]):
+        if user is None:
+            user = ctx.author
+        # if user == self.bot.user:
+        #     raise Exception("You are unable to see the bot's wallet!")
+        embed = Embed(colour=Colour.gold())
+        embed.set_author(name=user.name, icon_url=user.avatar_url)
+        embed.add_field(name="RS3 Wager",
+                        value=amountToString(self.bot.get_amount(user.id, MoneyType.WagRS3)), inline=False)
+        embed.add_field(name="07 Wager",
+                        value=amountToString(self.bot.get_amount(user.id, MoneyType.WagR07)), inline=False)
+        await ctx.send(embed=embed)
+
     @can_modify_economy()
     @commands.command(name="set")
     async def set_wallet(self, ctx, type: CoinType, user: discord.Member, amount: Amount):

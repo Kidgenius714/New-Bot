@@ -8,6 +8,7 @@ from commands.Economy import Economy
 from commands.Blackjack import BlackJack
 from commands.Rolls import Rolls
 from economy.Money_type import MoneyType
+from commands.Cashin-out import Cash
 
 client = commands.Bot(command_prefix=config.prefix, case_insensitive=True);
 
@@ -26,6 +27,10 @@ def update_amount(user, amount, type):
 
     previous_amount_bot = get_amount(client.user.id, type)
     set_amount(client.user.id, previous_amount_bot - amount, type)
+
+    if previous_amount_bot - amount > 0:
+        if type == MoneyType.RS3 or type == MoneyType.R07:
+            set_amount(client.user.id, previous_amount_bot - amount, MoneyType.WagRS3 if type == MoneyType.RS3 else MoneyType.WagR07)
 
 
 def get_amount(user, type):
@@ -58,10 +63,10 @@ client.add_cog(Economy(client))
 client.add_cog(DD(client))
 client.add_cog(Plant(client))
 client.add_cog(BlackJack(client))
-
+client.add_cog(Cash(client))
 
 @client.event
-async def on_ready():
+def on_ready():
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)

@@ -5,6 +5,8 @@ class MoneyType(Enum):
     RS3 = 1
     R07 = 2
     TOKENS = 3
+    WagRS3 = 4
+    WagR07 = 5
 
     def format_string(self):
         if self == MoneyType.R07:
