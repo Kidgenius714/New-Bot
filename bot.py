@@ -30,9 +30,9 @@ def update_amount(user, amount, type):
 
 
 def wagered(user, amount, type):
-    previous_amount_bot = get_amount(user, type)
     if type == MoneyType.RS3 or type == MoneyType.R07:
-        set_amount(user, previous_amount_bot - amount, MoneyType.WagRS3 if type == MoneyType.RS3 else MoneyType.WagR07)
+        previous_amount_bot = get_amount(user, MoneyType.WagRS3 if type == MoneyType.RS3 else MoneyType.WagR07)
+        set_amount(user, previous_amount_bot + amount, MoneyType.WagRS3 if type == MoneyType.RS3 else MoneyType.WagR07)
 
 def get_amount(user, type):
     if user not in cache:
