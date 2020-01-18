@@ -66,8 +66,10 @@ class Cash(commands.Cog):
         if not(id in ids):
             await ctx.send("There is no matching id or the id is expired!")
 
+        info = ids[id]
+
         embed = Embed(colour=Colour.green())
-        embed.add_field(name='Cashier found!', value=f"{ctx.author.mention} is going to be your cashier {ids[id].mention}, amount {amountToString(ids[id]["amount"])} {ids[id]["type"].format_string()}. ID: {id}")
+        embed.add_field(name='Cashier found!', value=f"{ctx.author.mention} is going to be your cashier {info["user"].mention}, amount {amountToString(info["amount"])} {info["type"].format_string()}. ID: {id}")
         await ctx.send(embed=embed)
         ids.pop(id)
 
