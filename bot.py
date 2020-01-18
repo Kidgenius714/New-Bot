@@ -59,6 +59,7 @@ def set_amount(user, amount, type):
 client.update_amount = update_amount
 client.get_amount = get_amount
 client.set_amount = set_amount
+client.wagered = wagered
 client.add_cog(Rolls(client))
 client.add_cog(Economy(client))
 client.add_cog(DD(client))
