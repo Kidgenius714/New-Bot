@@ -69,7 +69,7 @@ class Cash(commands.Cog):
         info = ids[id]
 
         embed = Embed(colour=Colour.green())
-        embed.add_field(name='Cashier found!', value=f"{ctx.author.mention} is going to be your cashier {info["user"].mention}, amount {amountToString(info["amount"])} {info["type"].format_string()}. ID: {id}")
+        embed.add_field(name='Cashier found!', value=f"{ctx.author.mention} is going to be your cashier {info.user.mention}, amount {amountToString(info.amount)} {info.type.format_string()}. ID: {id}")
         await ctx.send(embed=embed)
         ids.pop(id)
 
