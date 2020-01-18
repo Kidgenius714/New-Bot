@@ -33,13 +33,13 @@ class Cash(commands.Cog):
         self.Usage = "The roll commands"
 
     @commands.command(name="cashin")
-    async def cashin(self, ctx, type: CoinType, amount: Amount):
+    async def cashin(self, ctx, types: CoinType, amounts: Amount):
         id = len(ids)
         embed = Embed()
-        embed.add_field(name="Request Host", value=f"{ctx.author.mention}, You are requesting to cashin {amountToString(amount)} {type.format_string()}. A cashier will be assigned to you, ID: {id}", inline=False)
+        embed.add_field(name="Request Host", value=f"{ctx.author.mention}, You are requesting to cashin {amountToString(amounts)} {types.format_string()}. A cashier will be assigned to you, ID: {id}", inline=False)
         await ctx.guild.get_channel(request_id).send(embed=embed)
 
-        await ctx.guild.get_channel(cashiers_id).send(f"{ctx.guild.get_role(cashier_role_id).mention}, {ctx.author.mention} wants to insert **{amountToString(amount)}** {type.format_string()}. Use !accept {id}")
+        await ctx.guild.get_channel(cashiers_id).send(f"{ctx.guild.get_role(cashier_role_id).mention}, {ctx.author.mention} wants to insert **{amountToString(amounts)}** {types.format_string()}. Use !accept {id}")
 
         ids[id] = {
             "user": ctx.author,
@@ -47,14 +47,16 @@ class Cash(commands.Cog):
             "type": types
         }
 
+        print(ids)
+
     @commands.command(name="cashout")
     async def cashout(self, ctx, types: CoinType, amounts: Amount):
         id = len(ids)
         embed = Embed()
-        embed.add_field(name="Request Host", value=f"{ctx.author.mention}, You are requesting to cashout {amountToString(amount)} {type.format_string()}. A cashier will be assigned to you, ID: {id}", inline=False)
+        embed.add_field(name="Request Host", value=f"{ctx.author.mention}, You are requesting to cashout {amountToString(amounts)} {types.format_string()}. A cashier will be assigned to you, ID: {id}", inline=False)
         await ctx.guild.get_channel(request_id).send(embed=embed)
 
-        await ctx.guild.get_channel(cashiers_id).send(f"{ctx.guild.get_role(cashier_role_id).mention}, {ctx.author.mention} wants to withdraw **{amountToString(amount)}** {type.format_string()}. Use !accept {id}")
+        await ctx.guild.get_channel(cashiers_id).send(f"{ctx.guild.get_role(cashier_role_id).mention}, {ctx.author.mention} wants to withdraw **{amountToString(amounts)}** {types.format_string()}. Use !accept {id}")
 
         ids[id] = {
             "user": ctx.author,
