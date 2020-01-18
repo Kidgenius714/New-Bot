@@ -42,9 +42,9 @@ class Cash(commands.Cog):
         await ctx.guild.get_channel(cashiers_id).send(f"{ctx.guild.get_role(cashier_role_id).mention}, {ctx.author.mention} wants to insert **{amountToString(amounts)}** {types.format_string()}. Use !accept {id}")
 
         ids[id] = {
-            user: ctx.author,
-            amount: amounts,
-            type: types
+            "user": ctx.author,
+            "amount": amounts,
+            "type": types
         }
 
         print(ids)
