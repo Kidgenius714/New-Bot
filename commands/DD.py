@@ -13,7 +13,7 @@ from economy.Economy import amountToString
 
 async def dd(bot, ctx, amount, type):
     amountValid(bot, ctx.author.id, amount, type)
-    self.bot.wagered(ctx.author.id, amount, coin_type)
+    self.bot.wagered(ctx.author.id, amount, type)
 
     user = random.randint(2, 12)
     bot_chance = random.randint(2, 12)

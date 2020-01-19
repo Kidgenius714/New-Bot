@@ -29,7 +29,7 @@ class Plant(commands.Cog):
     @commands.command(name="plant")
     async def plant_command(self, ctx, hot, type: CoinType, amount: Amount):
         amountValid(self.bot, ctx.author.id, amount, type)
-        self.bot.wagered(ctx.author.id, amount, coin_type)
+        self.bot.wagered(ctx.author.id, amount, type)
         if hot.lower() != "hot" and hot.lower() != "cold":
             raise Exception("You must choose hot or cold")
 
