@@ -28,10 +28,11 @@ class Plant(commands.Cog):
 
     @commands.command(name="plant")
     async def plant_command(self, ctx, hot, type: CoinType, amount: Amount):
-        amount_valid(self.bot, ctx.author.id, amount, type)
-        self.bot.wagered(ctx.author.id, amount, type)
         if hot.lower() != "hot" and hot.lower() != "cold":
             raise Exception("You must choose hot or cold")
+        message = await self.bot.checking_database(ctx)
+        await amount_valid(self.bot, ctx.author.id, amount, type, message)
+        self.bot.wagered(ctx.author.id, amount, type)
 
         flower_names = [*flowers]
 
@@ -42,7 +43,7 @@ class Plant(commands.Cog):
         embed.set_thumbnail(url=flowers[flower][0])
         embed.add_field(name=f"Hot/Cold",
                         value=f"You **{'won' if has_won else 'lost'}** {amount_to_string(amount)}!\nYou guessed **{hot.lower()}** and planted a **{flowers[flower][2].lower()}**")
-        await ctx.send(embed=embed)
+        await message.edit(embed=embed)
         if has_won:
             self.bot.update_amount(ctx.author.id, amount, type)
         else:

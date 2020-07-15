@@ -74,8 +74,9 @@ class FlowerPoker(commands.Cog):
 
     @commands.command(name="fp")
     async def flower_poker(self, ctx, type: CoinType, amount: Amount):
+        message = await self.bot.checking_database(ctx)
         global embed
-        amount_valid(self.bot, ctx.author.id, amount, type)
+        await amount_valid(self.bot, ctx.author.id, amount, type, message)
         self.bot.wagered(ctx.author.id, amount, type)
 
         player_flowers = [self.get_flower(), self.get_flower(), self.get_flower(), self.get_flower(), self.get_flower()]
@@ -99,7 +100,7 @@ class FlowerPoker(commands.Cog):
         embed.add_field(name=f"Players's Hand ({result_player.format_string()})",
                         value=" ".join(player_flowers), inline=False)
 
-        await ctx.send(embed=embed)
+        await message.edit(embed=embed)
 
         if result_player.value > result_bot.value:
             self.bot.update_amount(ctx.author.id, (amount), type)

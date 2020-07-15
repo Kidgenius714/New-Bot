@@ -17,15 +17,19 @@ def amount_to_string(amount):
         return f"{round(amount, 1)}"
 
 
-def amount_valid(bot, user_id, amount, type):
+async def amount_valid(bot, user_id, amount, type, msg):
     if bot.get_amount(user_id, type) < amount:
+        await msg.delete()
         raise Exception(f"Not enough {type.format_string()}")
 
     if amount < 0:
+        await msg.delete()
         raise Exception(f"Can't gamble negative numbers")
 
     if amount < type.min_amount():
+        await msg.delete()
         raise Exception(f"Amount: {amount_to_string(amount)} is below minimum for {type.format_string()}. \n The min amount is {amount_to_string(type.min_amount())}")
 
     if bot.get_amount(bot.user.id, type) / 2 < amount:
+        await msg.delete()
         raise Exception(f"Bot does not have enough money.")

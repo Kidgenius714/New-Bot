@@ -16,7 +16,8 @@ class OverUnder(commands.Cog):
 
     @commands.command(name="over")
     async def over(self, ctx, type: CoinType, amount: Amount):
-        amount_valid(self.bot, ctx.author.id, amount, type)
+        message = await self.bot.checking_database(ctx)
+        await amount_valid(self.bot, ctx.author.id, amount, type, message)
         self.bot.wagered(ctx.author.id, amount, type)
         rolled = random.randint(0, 100)
         has_won = rolled >= 45
@@ -31,7 +32,7 @@ class OverUnder(commands.Cog):
                         value=f"Number is {rolled}. You {'won' if has_won else 'lost'} {amount_to_string(amount)} {type.format_string()}"
                         )
 
-        await ctx.send(embed=embed)
+        await message.edit(embed=embed)
         if has_won:
             self.bot.update_amount(ctx.author.id, (amount), type)
         else:
@@ -40,7 +41,8 @@ class OverUnder(commands.Cog):
 
     @commands.command(name="under")
     async def under(self, ctx, type: CoinType, amount: Amount):
-        amount_valid(self.bot, ctx.author.id, amount, type)
+        message = await self.bot.checking_database(ctx)
+        await amount_valid(self.bot, ctx.author.id, amount, type, message)
         self.bot.wagered(ctx.author.id, amount, type)
         rolled = random.randint(0, 100)
         has_won = rolled <= 50
@@ -55,7 +57,7 @@ class OverUnder(commands.Cog):
                         value=f"Number is {rolled}. You {'won' if has_won else 'lost'} {amount_to_string(amount)} {type.format_string()}."
                         )
 
-        await ctx.send(embed=embed)
+        await message.edit(embed=embed)
         if has_won:
             self.bot.update_amount(ctx.author.id, (amount), type)
         else:

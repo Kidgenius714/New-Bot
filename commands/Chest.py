@@ -34,7 +34,9 @@ class Chest(commands.Cog):
 
     @commands.command(name="chest")
     async def chest_command(self, ctx):
-        amount_valid(self.bot, ctx.author.id, 3000000, MoneyType.R07)
+        message = await self.bot.checking_database(ctx)
+
+        await amount_valid(self.bot, ctx.author.id, 3000000, MoneyType.R07, message)
 
 
         if random.randint(0, 100) == 0:
@@ -62,7 +64,7 @@ class Chest(commands.Cog):
 
             embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
 
-        await ctx.send(embed=embed)
+        await message.edit(embed=embed)
 
     @chest_command.error
     async def info_error(self, ctx, error):

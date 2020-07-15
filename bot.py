@@ -24,7 +24,9 @@ from commands.Rolls import Rolls
 from commands.Secret import Secret
 from economy.Money_type import MoneyType
 
-with open('config.json', 'r') as datafile, io.StringIO() as data:
+CONFIG_NAME = "config.json"
+
+with open(CONFIG_NAME, 'r') as datafile, io.StringIO() as data:
     config = json.load(datafile)
 
 
@@ -65,7 +67,7 @@ add_default(config, "flowers", [
     "<:rainbow:563800536063803393>"
 ])
 
-with open('config.json', 'w') as datafile:
+with open(CONFIG_NAME, 'w') as datafile:
     json.dump(config, datafile, indent=2)
 
 client = commands.Bot(command_prefix=config["prefix"], case_insensitive=True)
@@ -110,6 +112,8 @@ def cache_check(user):
         else:
             cache[user] = coins.find_one({"UID": str(user)})
 
+
+
 def update(user):
     coins.update_one({"UID": str(user)}, {"$set": cache[user]})
 
@@ -122,6 +126,16 @@ def set_secret(user, sec):
     cache_check(user)
 
     cache[user]["secret"] = sec
+
+def contains_secret(sec):
+    for i in cache:
+        if cache[i]["secret"] == sec:
+            return True
+
+    found = coins.find_one({"secret": sec})
+    if found is None:
+        return False
+    return found["UID"] not in cache
 
 def get_secret_nonce(user):
     cache_check(user)
@@ -142,6 +156,10 @@ def update_nonce(user):
 
     nonce[user] = nonce[user] + 1
 
+async def checking_database(ctx):
+    embed = Embed(colour=Colour.gold(), description=f"Checking database")
+    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+    return await ctx.send(embed=embed)
 
 def random_number(user):
 
@@ -161,16 +179,16 @@ def random_number(user):
 
     return int(hash[offset-5:offset], 16)%(10000)/100
 
-
-
 client.config = config
 client.update_amount = update_amount
 client.get_amount = get_amount
 client.set_amount = set_amount
 client.wagered = wagered
 client.set_secret = set_secret
+client.contains_secret = contains_secret
 client.get_secret_nonce = get_secret_nonce
 client.random_number = random_number
+client.checking_database = checking_database
 client.add_cog(Rolls(client))
 client.add_cog(Economy(client))
 client.add_cog(DD(client))
@@ -196,7 +214,7 @@ def on_exit():
     print("Saving!")
     for user in cache:
         coins.update_one({"UID": str(user)}, {"$set": cache[user]})
-    with open('config.json', 'w') as datafile:
+    with open(CONFIG_NAME, 'w') as datafile:
         json.dump(config, datafile, indent=2)
 
 

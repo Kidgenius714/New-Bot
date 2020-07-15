@@ -10,7 +10,8 @@ from economy.Economy import amount_valid
 
 
 async def roll(bot, ctx, amount, type, chance, multiplier):
-    amount_valid(bot, ctx.author.id, amount, type)
+    message = await bot.checking_database(ctx)
+    await amount_valid(bot, ctx.author.id, amount, type, message)
     bot.wagered(ctx.author.id, amount, type)
 
     rolled = bot.random_number(ctx.author.id)
@@ -28,7 +29,7 @@ async def roll(bot, ctx, amount, type, chance, multiplier):
 
     embed.set_footer(text=f"Nonce: {bot.get_secret_nonce(ctx.author.id)[1]} | Client Seed: {bot.get_secret_nonce(ctx.author.id)[0]}")
 
-    await ctx.send(embed=embed)
+    await message.edit(embed=embed)
     if has_won:
         bot.update_amount(ctx.author.id, (amount * multiplier), type)
     else:

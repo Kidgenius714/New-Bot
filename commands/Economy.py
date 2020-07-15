@@ -25,6 +25,7 @@ class Economy(commands.Cog):
 
     @commands.command(name="wallet", aliases=["w"])
     async def wallet(self, ctx, user: typing.Optional[discord.Member]):
+        message = await self.bot.checking_database(ctx)
         if user is None:
             user = ctx.author
         embed = Embed(colour=Colour.gold())
@@ -33,10 +34,11 @@ class Economy(commands.Cog):
                         value=amount_to_string(self.bot.get_amount(user.id, MoneyType.RS3)), inline=False)
         embed.add_field(name="07 Balance",
                         value=amount_to_string(self.bot.get_amount(user.id, MoneyType.R07)), inline=False)
-        await ctx.send(embed=embed)
+        await message.edit(embed=embed)
 
     @commands.command(name="wager")
     async def wager(self, ctx, user: typing.Optional[discord.Member]):
+        message = await self.bot.checking_database(ctx)
         if user is None:
             user = ctx.author
         embed = Embed(colour=Colour.gold())
@@ -45,7 +47,7 @@ class Economy(commands.Cog):
                         value=amount_to_string(self.bot.get_amount(user.id, MoneyType.WagRS3)), inline=False)
         embed.add_field(name="07 Wager",
                         value=amount_to_string(self.bot.get_amount(user.id, MoneyType.WagR07)), inline=False)
-        await ctx.send(embed=embed)
+        await message.edit(embed=embed)
 
     @commands.command(name="set")
     async def set_wallet(self, ctx, coin_type: CoinType, user: discord.Member, amount: Amount):
@@ -69,11 +71,12 @@ class Economy(commands.Cog):
 
     @commands.command(name="transfer")
     async def transfer(self, ctx, coin_type: CoinType, user: discord.Member, amount: Amount):
-        amount_valid(self.bot, ctx.author.id, amount, coin_type)
+        message = await self.bot.checking_database(ctx)
+        await amount_valid(self.bot, ctx.author.id, amount, coin_type, message)
         embed = Embed(colour=Colour.gold())
         embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
         embed.add_field(name="Transfer Request", value=f"Successfully transferred {amount_to_string(amount)} {coin_type.format_string()} to {user.mention} wallet", inline=False)
-        await ctx.send(embed=embed)
+        await message.edit(embed=embed)
         self.bot.update_amount(user.id, amount, coin_type)
         self.bot.update_amount(ctx.author.id,0 -amount, coin_type)
 

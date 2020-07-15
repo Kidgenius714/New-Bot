@@ -2,17 +2,17 @@ import random
 
 from discord import Colour
 from discord import Embed
-from discord import Message
 from discord.ext import commands
 
 from commands.Amount_converter import Amount
 from commands.Coin_converter import CoinType
-from economy.Economy import amount_valid
 from economy.Economy import amount_to_string
+from economy.Economy import amount_valid
 
 
 async def dice_duel(bot, ctx, amount, type):
-    amount_valid(bot, ctx.author.id, amount, type)
+    message = await bot.checking_database(ctx)
+    await amount_valid(bot, ctx.author.id, amount, type, message)
     bot.wagered(ctx.author.id, amount, type)
 
     user = random.randint(2, 12)
@@ -40,7 +40,7 @@ async def dice_duel(bot, ctx, amount, type):
         embed.add_field(name="Dice Results: ", value=ctx.author.mention if has_won else bot.user.mention, inline=False)
         embed.add_field(name="Money:", value=f"You won {amount_to_string((amount * 1.9) - amount)}" if has_won else f"You lost {amount_to_string(amount)}", inline=False)
 
-    await ctx.send(embed=embed)
+    await message.edit(embed=embed)
     if has_won:
         bot.update_amount(ctx.author.id, (amount * 1.9) - amount, type)
     elif bot_chance != user:

@@ -187,7 +187,8 @@ class BlackJack(commands.Cog):
 
     @commands.command(name="bj")
     async def bj_command(self, ctx, coin_type: CoinType, amount: Amount):
-        amount_valid(self.bot, ctx.author.id, amount, coin_type)
+        message = await self.bot.checking_database(ctx)
+        await amount_valid(self.bot, ctx.author.id, amount, coin_type, message)
         self.bot.wagered(ctx.author.id, amount, coin_type)
         author_id = ctx.author.id
 
@@ -196,7 +197,7 @@ class BlackJack(commands.Cog):
 
         data[author_id] = {
             "channel": ctx.channel,
-            "msg_id": None,
+            "msg_id": message,
             "author_cards": [],
             "bot_cards": [],
             "deck": self.card_names * 16,

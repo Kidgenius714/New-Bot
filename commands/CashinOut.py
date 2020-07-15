@@ -29,7 +29,9 @@ class Cash(commands.Cog):
 
     @commands.command(name="cashin")
     async def cashin(self, ctx, types: CoinType, amounts: Amount):
-        amount_valid(self.bot, ctx.author.id, amounts, types)
+        message = await self.bot.checking_database(ctx)
+        await amount_valid(self.bot, ctx.author.id, amounts, types, message)
+        await message.delete()
         cashin_id = len(ids)
         embed = Embed()
         embed.add_field(name="Request Host", value=f"{ctx.author.mention}, You are requesting to cashin {amount_to_string(amounts)} {types.format_string()}. A cashier will be assigned to you, ID: {cashin_id}", inline=False)
@@ -46,7 +48,9 @@ class Cash(commands.Cog):
 
     @commands.command(name="cashout")
     async def cashout(self, ctx, types: CoinType, amounts: Amount):
-        amount_valid(self.bot, ctx.author.id, amounts, types)
+        message = await self.bot.checking_database(ctx)
+        await amount_valid(self.bot, ctx.author.id, amounts, types, message)
+        await message.delete()
         cashout_id = len(ids)
         embed = Embed()
         embed.add_field(name="Request Host",
