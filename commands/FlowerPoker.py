@@ -75,6 +75,7 @@ class FlowerPoker(commands.Cog):
     @commands.command(name="fp")
     async def flower_poker(self, ctx, type: CoinType, amount: Amount):
         message = await self.bot.checking_database(ctx)
+
         global embed
         await amount_valid(self.bot, ctx.author.id, amount, type, message)
         self.bot.wagered(ctx.author.id, amount, type)

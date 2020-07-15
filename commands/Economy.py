@@ -53,6 +53,7 @@ class Economy(commands.Cog):
     async def set_wallet(self, ctx, coin_type: CoinType, user: discord.Member, amount: Amount):
         if not self.can_modify_economy(ctx):
             return
+
         embed = Embed(colour=Colour.gold())
         embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
         embed.add_field(name="Set Request", value=f"Successfully set {coin_type.format_string()} to {amount_to_string(amount)} for {user.mention} wallet", inline=False)

@@ -26,7 +26,6 @@ rare_items = [
     ["Primordial boots", 32100000, "https://cdn.discordapp.com/attachments/650248256915243018/726472158590795796/Primordial_boots.gif"]
 ]
 
-
 class Chest(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

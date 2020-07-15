@@ -8,7 +8,6 @@ from commands.Coin_converter import CoinType
 from economy.Economy import amount_to_string
 from economy.Economy import amount_valid
 
-
 class OverUnder(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

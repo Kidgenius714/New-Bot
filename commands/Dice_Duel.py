@@ -28,7 +28,6 @@ async def dice_duel(bot, ctx, amount, type):
         colour = Colour.red()
 
     embed = Embed(colour=colour, name="Dice duel", description=f"Host: {ctx.author.mention} \nYou Rolled [{user}]")
-
     embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
     embed.add_field(name="Range:", value="1-12", inline=False)
     embed.add_field(name="Bot Roll:", value=bot_chance)

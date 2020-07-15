@@ -219,6 +219,7 @@ class BlackJack(commands.Cog):
                 await message.delete()
                 await hit(message.author.id, message.channel, self.bot)
                 return
+
             embed = Embed(colour=Colour.red())
             embed.set_footer(text=usage)
             embed.add_field(name='Error', value="You are not in a game!")

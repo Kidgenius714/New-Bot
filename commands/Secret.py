@@ -17,6 +17,7 @@ class Secret(commands.Cog):
         embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
         message = await ctx.send(embed=embed)
 
+
         if secret is None:
             embed = Embed(colour=Colour.gold(), description=f"Your seed is **{self.bot.get_secret_nonce(ctx.author.id)[0]}**")
             embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)

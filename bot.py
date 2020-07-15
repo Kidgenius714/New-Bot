@@ -179,6 +179,7 @@ def random_number(user):
 
     return int(hash[offset-5:offset], 16)%(10000)/100
 
+
 client.config = config
 client.update_amount = update_amount
 client.get_amount = get_amount

@@ -8,8 +8,7 @@ from economy.Economy import amount_to_string
 from economy.Economy import amount_valid
 
 
-ids = {
-}
+ids = {}
 
 class Cash(commands.Cog):
     def __init__(self, bot):

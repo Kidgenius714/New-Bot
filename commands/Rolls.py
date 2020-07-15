@@ -17,6 +17,7 @@ async def roll(bot, ctx, amount, type, chance, multiplier):
     rolled = bot.random_number(ctx.author.id)
     has_won = rolled > chance
 
+
     if has_won:
         embed = Embed(colour=Colour.green())
     else:

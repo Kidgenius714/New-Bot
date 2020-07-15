@@ -34,6 +34,7 @@ class Plant(commands.Cog):
         await amount_valid(self.bot, ctx.author.id, amount, type, message)
         self.bot.wagered(ctx.author.id, amount, type)
 
+
         flower_names = [*flowers]
 
         flower = flower_names[random.randint(0, len(flower_names) - 1)]
