@@ -7,13 +7,13 @@ from discord.ext import commands
 
 from commands.Amount_converter import Amount
 from commands.Coin_converter import CoinType
-from economy.Economy import amountValid
-from economy.Economy import amountToString
+from economy.Economy import amount_valid
+from economy.Economy import amount_to_string
 
 
-async def dd(bot, ctx, amount, type):
-    amountValid(bot, ctx.author.id, amount, type)
-    self.bot.wagered(ctx.author.id, amount, type)
+async def dice_duel(bot, ctx, amount, type):
+    amount_valid(bot, ctx.author.id, amount, type)
+    bot.wagered(ctx.author.id, amount, type)
 
     user = random.randint(2, 12)
     bot_chance = random.randint(2, 12)
@@ -38,7 +38,7 @@ async def dd(bot, ctx, amount, type):
         embed.add_field(name="Dice Results: ", value="Tie", inline=False)
     else:
         embed.add_field(name="Dice Results: ", value=ctx.author.mention if has_won else bot.user.mention, inline=False)
-        embed.add_field(name="Money:", value=f"You won {amountToString((amount * 1.9) - amount)}" if has_won else f"You lost {amountToString(amount)}", inline=False)
+        embed.add_field(name="Money:", value=f"You won {amount_to_string((amount * 1.9) - amount)}" if has_won else f"You lost {amount_to_string(amount)}", inline=False)
 
     await ctx.send(embed=embed)
     if has_won:
@@ -50,15 +50,15 @@ async def dd(bot, ctx, amount, type):
 class DD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.Usage = "The roll commands"
+        self.Usage = "The dice duel commands"
 
     @commands.command(name="dd")
     async def dd_command(self, ctx, type: CoinType, amount: Amount):
-        await dd(self.bot, ctx, amount, type)
+        await dice_duel(self.bot, ctx, amount, type)
 
     @dd_command.error
     async def info_error(self, ctx, error):
         embed = Embed(colour=Colour.red())
-        embed.set_footer(text="Usage: !dd amount")
+        embed.set_footer(text="Usage: !dd [07 | rs3] amount")
         embed.add_field(name='Error', value=error.args[0].replace("Command raised an exception: Exception: ", ""))
         await ctx.send(embed=embed)

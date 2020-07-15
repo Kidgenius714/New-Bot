@@ -1,88 +1,18 @@
 import random
+from enum import Enum
 
 from discord import Colour
 from discord import Embed
-from discord import User
-from discord import TextChannel
-from discord import Guild
 from discord.ext import commands
 
 from commands.Amount_converter import Amount
 from commands.Coin_converter import CoinType
-from economy.Economy import amountValid
-from economy.Economy import amountToString
-from enum import Enum
-
-import time
+from economy.Economy import amount_to_string
+from economy.Economy import amount_valid
 
 data = {}
-cards_names = [
-    {
-        "emoji": "<:BetaGate2_Key1_Clue_HyKwIEkVVxk4:662527301669486617>",
-        "value": 2
-    },
-    {
-        "emoji": "<:BetaGate2_Key1_Clue_HyKwIEkVVxk4:662527301669486617>",
-        "value": 3
-    },
-    {
-        "emoji": "<:BetaGate2_Key1_Clue_HyKwIEkVVxk4:662527301669486617>",
-        "value": 4
-    },
-    {
-        "emoji": "<:BetaGate2_Key1_Clue_HyKwIEkVVxk4:662527301669486617>",
-        "value": 4
-    },
-    {
-        "emoji": "<:BetaGate2_Key1_Clue_HyKwIEkVVxk4:662527301669486617>",
-        "value": 5
-    },
-    {
-        "emoji": "<:BetaGate2_Key1_Clue_HyKwIEkVVxk4:662527301669486617>",
-        "value": 6
-    },
-    {
-        "emoji": "<:BetaGate2_Key1_Clue_HyKwIEkVVxk4:662527301669486617>",
-        "value": 7
-    },
-    {
-        "emoji": "<:BetaGate2_Key1_Clue_HyKwIEkVVxk4:662527301669486617>",
-        "value": 8
-    },
-    {
-        "emoji": "<:BetaGate2_Key1_Clue_HyKwIEkVVxk4:662527301669486617>",
-        "value": 9
-    },
-    {
-        "emoji": "<:BetaGate2_Key1_Clue_HyKwIEkVVxk4:662527301669486617>",
-        "value": 10
-    },
-    {
-        "emoji": "<:BetaGate2_Key1_Clue_HyKwIEkVVxk4:662527301669486617>",
-        "value": 10
-    },
-    {
-        "emoji": "<:BetaGate2_Key1_Clue_HyKwIEkVVxk4:662527301669486617>",
-        "value": 10
-    },
-    {
-        "emoji": "<:BetaGate2_Key1_Clue_HyKwIEkVVxk4:662527301669486617>",
-        "value": 10
-    },
-    {
-        "emoji": "<:BetaGate2_Key1_Clue_HyKwIEkVVxk4:662527301669486617>",
-        "value": 10
-    },
-    {
-        "emoji": "<:BetaGate2_Key1_Clue_HyKwIEkVVxk4:662527301669486617>",
-        "value": 10
-    },
-    {
-        "emoji": "<:BetaGate2_Key1_Clue_HyKwIEkVVxk4:662527301669486617>",
-        "value": None
-    }
-]
 
+usage = "Usage: !bj type amount"
 
 class Winner(Enum):
     AUTHOR = 0
@@ -147,7 +77,7 @@ async def bust(id):
     bot_deck = data[id]["bot_cards"]
     embed.add_field(name="Bot", value=await embed_cards(bot_deck))
 
-    embed.set_footer(text=f"Bust I win! Better luck next time. Amount Lost: {amountToString(data[id]['amount'])} {data[id]['type'].format_string()}", icon_url=data[id]["icon_url"])
+    embed.set_footer(text=f"Bust I win! Better luck next time. Amount Lost: {amount_to_string(data[id]['amount'])} {data[id]['type'].format_string()}", icon_url=data[id]["icon_url"])
 
     if data[id]["msg_id"] is None:
         data[id]["msg_id"] = await data[id]["channel"].send(embed=embed)
@@ -165,7 +95,7 @@ async def win(id, bot):
     bot_deck = data[id]["bot_cards"]
     embed.add_field(name="Bot", value=await embed_cards(bot_deck))
 
-    embed.set_footer(text=f"I guess you win this time. Amount Won: {amountToString(data[id]['amount'])} {data[id]['type'].format_string()}", icon_url=data[id]["icon_url"])
+    embed.set_footer(text=f"I guess you win this time. Amount Won: {amount_to_string(data[id]['amount'])} {data[id]['type'].format_string()}", icon_url=data[id]["icon_url"])
 
     if data[id]["msg_id"] is None:
         data[id]["msg_id"] = await data[id]["channel"].send(embed=embed)
@@ -198,7 +128,7 @@ async def tie(id, bot):
 async def hit(id, channel, bot):
     if data[id]["author_stand"]:
         embed = Embed(colour=Colour.red())
-        embed.set_footer(text="Usage: !bj type amount", icon_url=data[id]["icon_url"])
+        embed.set_footer(text=usage, icon_url=data[id]["icon_url"])
         embed.add_field(name='Error', value="You cannot hit after standing!")
         await channel.send(embed=embed)
 
@@ -226,7 +156,7 @@ async def stand(id, bot):
 
 def draw_card(id, bot):
     card = data[id]["deck"].pop()
-    if card["value"] is None:
+    if card["value"] == -1:
         deck = data[id]["bot_cards" if bot else "author_cards"]
         if calculate_total(deck) > 10:
             card["value"] = 1
@@ -238,7 +168,6 @@ def draw_card(id, bot):
 async def finish(id, winner: Winner, bot):
     if winner == Winner.BOT:
         await bust(id)
-        # todo stuff
 
     if winner == Winner.AUTHOR:
         await win(id, bot)
@@ -254,10 +183,11 @@ class BlackJack(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.Usage = "The blackjack commands"
+        self.card_names = self.bot.config['card_names']
 
     @commands.command(name="bj")
     async def bj_command(self, ctx, coin_type: CoinType, amount: Amount):
-        amountValid(self.bot, ctx.author.id, amount, coin_type)
+        amount_valid(self.bot, ctx.author.id, amount, coin_type)
         self.bot.wagered(ctx.author.id, amount, coin_type)
         author_id = ctx.author.id
 
@@ -269,7 +199,7 @@ class BlackJack(commands.Cog):
             "msg_id": None,
             "author_cards": [],
             "bot_cards": [],
-            "deck": cards_names * 16,
+            "deck": self.card_names * 16,
             "author_stand": False,
             "type": coin_type,
             "amount": amount,
@@ -289,7 +219,7 @@ class BlackJack(commands.Cog):
                 await hit(message.author.id, message.channel, self.bot)
                 return
             embed = Embed(colour=Colour.red())
-            embed.set_footer(text="Usage: !bj type amount")
+            embed.set_footer(text=usage)
             embed.add_field(name='Error', value="You are not in a game!")
             await message.channel.send(embed=embed)
 
@@ -299,14 +229,14 @@ class BlackJack(commands.Cog):
                 await stand(message.author.id, self.bot)
                 return
             embed = Embed(colour=Colour.red())
-            embed.set_footer(text="Usage: !bj type amount")
+            embed.set_footer(text=usage)
             embed.add_field(name='Error', value="You are not in a game!")
             await message.send(embed=embed)
 
     @bj_command.error
     async def info_error(self, ctx, error):
         embed = Embed(colour=Colour.red())
-        embed.set_footer(text="Usage: !bj type amount")
+        embed.set_footer(text=usage)
         embed.add_field(name='Error', value=error.args[0].replace("Command raised an exception: Exception: ", ""))
         await ctx.send(embed=embed)
         raise error

@@ -5,29 +5,31 @@ from discord import Embed
 from discord.ext import commands
 from commands.Amount_converter import Amount
 from commands.Coin_converter import CoinType
-from economy.Economy import amountToString
-from economy.Economy import amountValid
+from economy.Economy import amount_to_string
+from economy.Economy import amount_valid
 
 
 async def roll(bot, ctx, amount, type, chance, multiplier):
-    amountValid(bot, ctx.author.id, amount, type)
+    amount_valid(bot, ctx.author.id, amount, type)
     bot.wagered(ctx.author.id, amount, type)
 
-    rolled = random.randint(0, 100)
-    hasWon = rolled > chance
+    rolled = bot.random_number(ctx.author.id)
+    has_won = rolled > chance
 
-    if hasWon:
+    if has_won:
         embed = Embed(colour=Colour.green())
     else:
         embed = Embed(colour=Colour.red())
 
     embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
     embed.add_field(name="Dice game",
-                    value=f"Rolled {rolled} out of 100. You {'won' if hasWon else 'lost'} {amountToString((amount * multiplier) - amount) if hasWon else amountToString(amount)} {type.format_string()}"
+                    value=f"Rolled {rolled} out of 100. You {'won' if has_won else 'lost'} {amount_to_string((amount * multiplier) - amount) if has_won else amount_to_string(amount)} {type.format_string()}"
                     )
 
+    embed.set_footer(text=f"Nonce: {bot.get_secret_nonce(ctx.author.id)[1]} | Client Seed: {bot.get_secret_nonce(ctx.author.id)[0]}")
+
     await ctx.send(embed=embed)
-    if hasWon:
+    if has_won:
         bot.update_amount(ctx.author.id, (amount * multiplier), type)
     else:
         bot.update_amount(ctx.author.id, -amount, type)

@@ -6,8 +6,8 @@ from discord.ext import commands
 
 from commands.Amount_converter import Amount
 from commands.Coin_converter import CoinType
-from economy.Economy import amountValid
-from economy.Economy import amountToString
+from economy.Economy import amount_valid
+from economy.Economy import amount_to_string
 
 flowers = {
     "purple": ["https://cdn.discordapp.com/attachments/628820715013013546/629639422316380160/purple.png", Colour.magenta(), "cold"],
@@ -18,7 +18,7 @@ flowers = {
             "https/cdn.discordapp.com/emojis/567247590102663180.png", Colour.red(), "hot"],
     "orange": ["https://cdn.discordapp.com/attachments/628820715013013546/629639412376010752/Orange.png", Colour.orange(), "hot"],
     "rainbow": ["https://cdn.discordapp.com/attachments/628820715013013546/629639426653421569/rainbow.png", Colour.from_rgb(0, 255, 255), "Host Wins"]
-   }
+}
 
 
 class Plant(commands.Cog):
@@ -28,7 +28,7 @@ class Plant(commands.Cog):
 
     @commands.command(name="plant")
     async def plant_command(self, ctx, hot, type: CoinType, amount: Amount):
-        amountValid(self.bot, ctx.author.id, amount, type)
+        amount_valid(self.bot, ctx.author.id, amount, type)
         self.bot.wagered(ctx.author.id, amount, type)
         if hot.lower() != "hot" and hot.lower() != "cold":
             raise Exception("You must choose hot or cold")
@@ -40,8 +40,8 @@ class Plant(commands.Cog):
 
         embed = Embed(title="Picking Flowers!", colour=flowers[flower][1])
         embed.set_thumbnail(url=flowers[flower][0])
-        embed.add_field(name=f"A {flower.title()} has been drawn!",
-                        value=f"Host by: {ctx.author.mention}\n\n\n You **{'won' if has_won else 'lost'}** {amountToString(amount)}!")
+        embed.add_field(name=f"Hot/Cold",
+                        value=f"You **{'won' if has_won else 'lost'}** {amount_to_string(amount)}!\nYou guessed **{hot.lower()}** and planted a **{flowers[flower][2].lower()}**")
         await ctx.send(embed=embed)
         if has_won:
             self.bot.update_amount(ctx.author.id, amount, type)

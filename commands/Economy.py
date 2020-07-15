@@ -5,20 +5,10 @@ from discord import Colour
 from discord import Embed
 from discord.ext import commands
 
-import config
 from commands.Amount_converter import Amount
 from commands.Coin_converter import CoinType
-from economy.Economy import amountToString
+from economy.Economy import amount_to_string, amount_valid
 from economy.Money_type import MoneyType
-
-
-def can_modify_economy():
-    async def predicate(ctx):
-        if ctx.guild.get_role(config.can_modify_economy).position <= ctx.author.top_role.position:
-            return True
-        else:
-            raise commands.MissingRole(ctx.guild.get_role(config.can_modify_economy).name)
-    return commands.check(predicate)
 
 
 class Economy(commands.Cog):
@@ -26,77 +16,86 @@ class Economy(commands.Cog):
         self.bot = bot
         self.Usage = "The roll commands"
 
+
+    def can_modify_economy(self, ctx):
+        if ctx.guild.get_role(self.bot.config['can_modify_economy']).position <= ctx.author.top_role.position:
+            return True
+        else:
+            raise commands.MissingRole(ctx.guild.get_role(self.bot.config['can_modify_economy']).name)
+
     @commands.command(name="wallet", aliases=["w"])
     async def wallet(self, ctx, user: typing.Optional[discord.Member]):
         if user is None:
             user = ctx.author
-        # if user == self.bot.user:
-        #     raise Exception("You are unable to see the bot's wallet!")
         embed = Embed(colour=Colour.gold())
         embed.set_author(name=user.name, icon_url=user.avatar_url)
         embed.add_field(name="RS3 Balance",
-                        value=amountToString(self.bot.get_amount(user.id, MoneyType.RS3)), inline=False)
+                        value=amount_to_string(self.bot.get_amount(user.id, MoneyType.RS3)), inline=False)
         embed.add_field(name="07 Balance",
-                        value=amountToString(self.bot.get_amount(user.id, MoneyType.R07)), inline=False)
+                        value=amount_to_string(self.bot.get_amount(user.id, MoneyType.R07)), inline=False)
         await ctx.send(embed=embed)
 
     @commands.command(name="wager")
     async def wager(self, ctx, user: typing.Optional[discord.Member]):
         if user is None:
             user = ctx.author
-        # if user == self.bot.user:
-        #     raise Exception("You are unable to see the bot's wallet!")
         embed = Embed(colour=Colour.gold())
         embed.set_author(name=user.name, icon_url=user.avatar_url)
         embed.add_field(name="RS3 Wager",
-                        value=amountToString(self.bot.get_amount(user.id, MoneyType.WagRS3)), inline=False)
+                        value=amount_to_string(self.bot.get_amount(user.id, MoneyType.WagRS3)), inline=False)
         embed.add_field(name="07 Wager",
-                        value=amountToString(self.bot.get_amount(user.id, MoneyType.WagR07)), inline=False)
+                        value=amount_to_string(self.bot.get_amount(user.id, MoneyType.WagR07)), inline=False)
         await ctx.send(embed=embed)
 
-    @can_modify_economy()
     @commands.command(name="set")
-    async def set_wallet(self, ctx, type: CoinType, user: discord.Member, amount: Amount):
+    async def set_wallet(self, ctx, coin_type: CoinType, user: discord.Member, amount: Amount):
+        if not self.can_modify_economy(ctx):
+            return
         embed = Embed(colour=Colour.gold())
         embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
-        embed.add_field(name="Set Request", value=f"Successfully set {type.format_string()} to {amountToString(amount)} for {user.mention} wallet", inline=False)
+        embed.add_field(name="Set Request", value=f"Successfully set {coin_type.format_string()} to {amount_to_string(amount)} for {user.mention} wallet", inline=False)
         await ctx.send(embed=embed)
-        self.bot.set_amount(user.id, amount, type)
+        self.bot.set_amount(user.id, amount, coin_type)
 
-    @can_modify_economy()
     @commands.command(name="update")
-    async def update(self, ctx, type: CoinType, user: discord.Member, amount: Amount):
+    async def update_wallet(self, ctx, coin_type: CoinType, user: discord.Member, amount: Amount):
+        if not self.can_modify_economy(ctx):
+            return
         embed = Embed(colour=Colour.gold())
         embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
-        embed.add_field(name="Update Request", value=f"Successfully updated {amountToString(amount)} {type.format_string()} to {user.mention} wallet", inline=False)
+        embed.add_field(name="Update Request", value=f"Successfully updated {amount_to_string(amount)} {coin_type.format_string()} to {user.mention} wallet", inline=False)
         await ctx.send(embed=embed)
-        self.bot.update_amount(user.id, amount, type)
+        self.bot.update_amount(user.id, amount, coin_type)
 
     @commands.command(name="transfer")
-    async def update(self, ctx, type: CoinType, user: discord.Member, amount: Amount):
-        amountValid(self.bot, ctx.author.id, amount, coin_type)
+    async def transfer(self, ctx, coin_type: CoinType, user: discord.Member, amount: Amount):
+        amount_valid(self.bot, ctx.author.id, amount, coin_type)
         embed = Embed(colour=Colour.gold())
         embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
-        embed.add_field(name="Transfer Request", value=f"Successfully transfered {amountToString(amount)} {type.format_string()} to {user.mention} wallet", inline=False)
+        embed.add_field(name="Transfer Request", value=f"Successfully transferred {amount_to_string(amount)} {coin_type.format_string()} to {user.mention} wallet", inline=False)
         await ctx.send(embed=embed)
-        self.bot.update_amount(user.id, amount, type)
-        self.bot.update_amount(ctx.author.id, amount, type)
+        self.bot.update_amount(user.id, amount, coin_type)
+        self.bot.update_amount(ctx.author.id,0 -amount, coin_type)
 
     @wallet.error
     async def wallet_info_error(self, ctx, error):
         await self.info_error(ctx, error, "![w | wallet] user")
 
     @wager.error
-    async def wallet_info_error(self, ctx, error):
+    async def wager_info_error(self, ctx, error):
         await self.info_error(ctx, error, "!wager user")
 
     @set_wallet.error
-    async def wallet_info_error(self, ctx, error):
+    async def set_info_error(self, ctx, error):
         await self.info_error(ctx, error, "!set [rs3 | 07] user amount")
 
-    @update.error
-    async def wallet_info_error(self, ctx, error):
+    @update_wallet.error
+    async def update_info_error(self, ctx, error):
         await self.info_error(ctx, error, "!update [rs3 | 07] user amount")
+
+    @transfer.error
+    async def transfer_info_error(self, ctx, error):
+        await self.info_error(ctx, error, "!transfer [rs3 | 07] user amount")
 
     async def info_error(self, ctx, error, usage):
         embed = Embed(colour=Colour.red())
