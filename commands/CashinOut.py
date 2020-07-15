@@ -8,17 +8,6 @@ from economy.Economy import amount_to_string
 from economy.Economy import amount_valid
 
 
-def is_host():
-    async def predicate(self, ctx):
-        if ctx.guild.get_role(self.bot.config['cashier_role_id']).position <= ctx.author.top_role.position:
-            return True
-        else:
-            raise commands.MissingRole(ctx.guild.get_role(self.bot.config['cashier_role_id']).name)
-
-    return commands.check(predicate)
-
-
-
 ids = {
 }
 
@@ -72,18 +61,21 @@ class Cash(commands.Cog):
             "type": types
         }
 
-    @is_host()
     @commands.command(name="accept")
     async def accept(self, ctx, accept_id: int):
+        if not ctx.guild.get_role(self.bot.config['cashier_role_id']).position <= ctx.author.top_role.position:
+            raise commands.MissingRole(ctx.guild.get_role(self.bot.config['cashier_role_id']).name)
+
         if not (accept_id in ids):
             await ctx.send("There is no matching id or the id is expired!")
+            return
 
         info = ids[accept_id]
 
         embed = Embed(colour=Colour.green())
         embed.add_field(name='Cashier found!', value=f"{ctx.author.mention} is going to be your cashier {info['user'].mention}, amount {amount_to_string(info['amount'])} {info['type'].format_string()}. ID: {accept_id}")
         await ctx.send(embed=embed)
-        ids.pop(id)
+        ids.pop(accept_id)
 
     @cashin.error
     async def cashin_info_error(self, ctx, error):
