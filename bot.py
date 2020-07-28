@@ -129,8 +129,9 @@ def set_secret(user, sec):
 
 def contains_secret(sec):
     for i in cache:
-        if cache[i]["secret"] == sec:
-            return True
+        if "secret" in cache[i]:
+            if cache[i]["secret"] == sec:
+                return True
 
     found = coins.find_one({"secret": sec})
     if found is None:
