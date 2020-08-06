@@ -208,6 +208,7 @@ class BlackJack(commands.Cog):
         }
         random.shuffle(data[author_id]["deck"])
         data[author_id]["author_cards"] = [draw_card(author_id, False), draw_card(author_id, False)]
+        data[author_id]["bot_cards"] = [draw_card(author_id, True)]
 
         self.bot.update_amount(author_id, -amount, coin_type)
         await print_embed(author_id)
