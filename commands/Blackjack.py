@@ -62,8 +62,11 @@ class BlackJack(commands.Cog):
             total += card["value"]
         return total
 
-    async def embed_cards(self, deck):
-        cards = "".join(map(lambda card: card["emoji"], deck))
+    async def embed_cards(self, deck, hidden_card):
+        if hidden_card:
+            cards = "".join(map(lambda card: card["emoji"], deck)) + self.hidden_card
+        else:
+            cards = "".join(map(lambda card: card["emoji"], deck))
         total = " + ".join(map(lambda card: str(card["value"]), deck)) + f" = {self.calculate_total(deck)}"
         return f"{cards}\n{total}"
 
@@ -85,15 +88,15 @@ class BlackJack(commands.Cog):
 
         return Winner.BOT if bot_total > author_total else Winner.AUTHOR
 
-    async def bust(self, id) -> object:
+    async def bust(self, id):
 
         embed = Embed(colour=Colour.red())
 
         player_deck = data[id]["author_cards"]
-        embed.add_field(name="Player", value=await self.embed_cards(player_deck))
+        embed.add_field(name="Player", value=await self.embed_cards(player_deck, False))
 
         bot_deck = data[id]["bot_cards"]
-        embed.add_field(name="Bot", value=await self.embed_cards(bot_deck))
+        embed.add_field(name="Bot", value=await self.embed_cards(bot_deck, False))
 
         embed.set_footer(
             text=f"Bust I win! Better luck next time. Amount Lost: {amount_to_string(data[id]['amount'])} {data[id]['type'].format_string()}",
@@ -109,10 +112,10 @@ class BlackJack(commands.Cog):
         embed = Embed(colour=Colour.green())
 
         player_deck = data[id]["author_cards"]
-        embed.add_field(name="Player", value=await embed_cards(player_deck))
+        embed.add_field(name="Player", value=await self.embed_cards(player_deck, False))
 
         bot_deck = data[id]["bot_cards"]
-        embed.add_field(name="Bot", value=await embed_cards(bot_deck))
+        embed.add_field(name="Bot", value=await self.embed_cards(bot_deck, False))
 
         embed.set_footer(
             text=f"I guess you win this time. Amount Won: {amount_to_string(data[id]['amount'])} {data[id]['type'].format_string()}",
@@ -130,10 +133,10 @@ class BlackJack(commands.Cog):
         embed = Embed(colour=Colour.gold())
 
         player_deck = data[id]["author_cards"]
-        embed.add_field(name="Player", value=await self.embed_cards(player_deck))
+        embed.add_field(name="Player", value=await self.embed_cards(player_deck, False))
 
         bot_deck = data[id]["bot_cards"]
-        embed.add_field(name="Bot", value=await self.embed_cards(bot_deck))
+        embed.add_field(name="Bot", value=await self.embed_cards(bot_deck, False))
 
         embed.set_footer(text=f"It ended in a tie. No amount lost or given.", icon_url=data[id]["icon_url"])
 
@@ -197,13 +200,10 @@ class BlackJack(commands.Cog):
         embed = Embed()
 
         player_deck = data[id]["author_cards"]
-        embed.add_field(name="Player", value=await self.embed_cards(player_deck))
+        embed.add_field(name="Player", value=await self.embed_cards(player_deck, False))
 
         bot_deck = data[id]["bot_cards"]
-        if hidden_card:
-            embed.add_field(name="Bot", value=f"{await self.embed_cards(bot_deck)} {self.hidden_card}")
-        else:
-            embed.add_field(name="Bot", value=f"{await self.embed_cards(bot_deck)} {self.hidden_card}")
+        embed.add_field(name="Bot", value=f"{await self.embed_cards(bot_deck, hidden_card)} {self.hidden_card}")
 
         if data[id]["msg_id"] is None:
             data[id]["msg_id"] = await data[id]["channel"].send(embed=embed)
