@@ -203,7 +203,7 @@ class BlackJack(commands.Cog):
         embed.add_field(name="Player", value=await self.embed_cards(player_deck, False))
 
         bot_deck = data[id]["bot_cards"]
-        embed.add_field(name="Bot", value=f"{await self.embed_cards(bot_deck, hidden_card)} {self.hidden_card}")
+        embed.add_field(name="Bot", value=f"{await self.embed_cards(bot_deck, hidden_card)}")
 
         if data[id]["msg_id"] is None:
             data[id]["msg_id"] = await data[id]["channel"].send(embed=embed)
