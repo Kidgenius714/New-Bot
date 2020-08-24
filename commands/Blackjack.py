@@ -159,7 +159,7 @@ class BlackJack(commands.Cog):
         if self.calculate_total(data[id]["author_cards"]) > 21:
             await self.finish(id, Winner.BOT, bot)
         else:
-            await self.print_embed(id, False)
+            await self.print_embed(id, True)
 
     async def bot_turn(self, id, bot):
         data[id]["bot_cards"].append(self.draw_card(id, True))
